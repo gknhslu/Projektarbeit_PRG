@@ -170,6 +170,34 @@ public class ClientApp {
     }
 }
 
+private LedService ledService = new LedService();
+	private static final Scanner scanner = new Scanner(System.in);
+
+	public void showBorder(LedService service) {
+service.addLeds(LedService.MAX_NUMBER_OF_LEDS);
+		service.stopExecutionFor(2000);
+
+	for (int counter = 0; counter < LedService.MAX_COLUMNS; counter += 16) {
+		for (int col = 0; col < LedService.MAX_COLUMNS; col++) {
+			ledService.turnLedOn(col);
+			service.setDelayInMillis(5);
+	}
+		}
+		for (int m = 0; m < 256; m++) {
+			if (m < 16 || m >= 240) {
+				service.turnLedOn(m);
+
+			} else if (m % 16 == 15 || m % 16 == 0) {
+
+				ledService.turnLedOn(m);
+			}
+			
+		}
+		service.stopExecutionFor(2000);
+		service.setDelayInMillis(5);
+		for (int aus = 0; aus < LedService.MAX_NUMBER_OF_LEDS; aus++) {
+		service.turnLedOff(aus);
+		}
 
 		
 
