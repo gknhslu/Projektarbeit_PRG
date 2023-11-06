@@ -1,0 +1,175 @@
+package ch.hslu.prg.LEDS;
+
+import ch.hslu.prg.leds.proxy.LedService;
+
+import java.util.Scanner;
+
+import java.util.Random;
+
+import java.lang.Integer;
+
+
+public class ClientApp {
+
+    public static void ledsOnOff(LedService service) {
+        System.out.println("Anzahl LED angeben: ");
+        Scanner sc = new Scanner(System.in);
+        int anzahl = sc.nextInt();
+        if (anzahl <= 16) {
+            service.addLeds(anzahl);
+            System.out.println("Folgende Anzahl LED's wurden dem Steckboard hinzugefügt: " + anzahl);
+
+
+            int wiederholung = 1;
+            while (wiederholung <= 3) {
+
+                System.out.println("(1) LED's anschalten mit Beginn bei 0.");
+                for (int i = 0; i <= anzahl; i++) {
+                    service.setDelayInMillis(500);
+                    service.turnLedOn(i);
+                }
+                service.setDelayInMillis(200);
+
+                System.out.println("(2) LED's abschalten mit Beginn bei höchster Zahl.");
+                for (int i = anzahl; i >= 0; i--) {
+                    service.setDelayInMillis(500);
+                    service.turnLedOff(i);
+                }
+                service.stopExecutionFor(2000);
+                wiederholung++;
+            }
+            System.out.println("Steckboard wird zurückgesetzt.");
+            service.reset();
+        } else {
+            System.out.println("Zahl darf 16 nicht überschreiten.");
+        }
+    }
+
+
+    public static void switchEvenOdd(LedService service) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Geben Sie an, wie viel Mal 16 LED's: ");
+        int anzahl = sc.nextInt();
+        int vielfachesVonSechzehn = anzahl * 16;
+        service.addLeds(vielfachesVonSechzehn);
+        service.stopExecutionFor(2000);
+
+        int wiederholung = 1;
+        while (wiederholung <= 3) {
+            System.out.println("(1) Nur die geraden LED's gehen an.");
+            for (int i = 0; i < vielfachesVonSechzehn; i++) {
+                if (i % 2 == 0) {
+                    service.turnLedOn(i);
+                }
+            }
+            service.stopExecutionFor(1000);
+
+            System.out.println("(2) Statuswechsel aller LED's.");
+            for (int i = 0; i < vielfachesVonSechzehn; i++) {
+                if (service.isOn(i)) {
+                    service.turnLedOff(i);
+                } else {
+                    service.turnLedOn(i);
+                }
+            }
+            service.stopExecutionFor(1000);
+
+            System.out.println("(3) Alle LED's werden nun ausgeschaltet.");
+            for (int i = 0; i < vielfachesVonSechzehn; i++) {
+                service.turnLedOff(i);
+            }
+            service.stopExecutionFor(1000);
+
+            wiederholung++;
+        }
+        System.out.println("Steckboard wird zurückgesetzt.");
+        service.reset();
+    }
+
+
+    public static void switchRandom(LedService service) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Geben Sie an, wie viel Mal 16 LED's: ");
+        int anzahl = sc.nextInt();
+        int vielfachesVonSechzehn = anzahl * 16;
+        service.addLeds(vielfachesVonSechzehn);
+        service.stopExecutionFor(2000);
+
+        System.out.println("Zufallszahlen werden generiert und ins Array geladen.");
+        Random randomZahl = new Random();
+        int[] meinArray = new int[vielfachesVonSechzehn];
+        for (int i = 0; i < meinArray.length; i++) {
+            meinArray[i] = randomZahl.nextInt(vielfachesVonSechzehn);
+        }
+
+        int wiederholung = 1;
+        while (wiederholung <= 3) {
+            System.out.println("(1) Die Hälfte der LED's anschalten.");
+            int haelfteDesArrays = meinArray.length / 2;
+            for (int i = 0; i < haelfteDesArrays; i++) {
+                service.turnLedOn(meinArray[i]);
+            }
+            service.stopExecutionFor(1000);
+
+            System.out.println("(2) Statuswechsel aller LED's.");
+            for (int i = 0; i < vielfachesVonSechzehn; i++) {
+                if (service.isOn(i)) {
+                    service.turnLedOff(i);
+                } else {
+                    service.turnLedOn(i);
+                }
+            }
+            service.stopExecutionFor(1000);
+
+            System.out.println("(3) Alle LED's werden nun ausgeschaltet.");
+            for (int i = 0; i < vielfachesVonSechzehn; i++) {
+                service.turnLedOff(i);
+            }
+            service.stopExecutionFor(1000);
+            wiederholung++;
+        }
+        System.out.println("Steckboard wird zurückgesetzt.");
+        service.reset();
+    }
+
+
+    public static void showBinary(LedService service) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Positive ganze Zahl eingeben: ");
+        int dezimalZahl = sc.nextInt();
+
+        if (dezimalZahl % 2 == 0) {
+            String binaerString = Integer.toBinaryString(dezimalZahl);
+            System.out.println("Der Binärwert von " + dezimalZahl + " ist " + binaerString);
+            int anzahlBinaerZiffern = binaerString.length();
+            System.out.println(anzahlBinaerZiffern + " LED's dem Steckboard hinzugefügt.");
+            service.addLeds(anzahlBinaerZiffern);
+
+            service.stopExecutionFor(2000);
+            System.out.println("LED anschalten falls Binär -> 1");
+            for (int i = anzahlBinaerZiffern - 1; i >= 0; i--) {
+                char einzelneBinaerZiffer = binaerString.charAt(i);
+                if (einzelneBinaerZiffer == '1') {
+                    service.turnLedOn(i);
+                }
+            }
+        } else {
+            System.out.println("Zahl muss gerade und ganzzahlig sein.");
+        }
+    }
+
+    public static void main(String[] args) {
+        LedService service = new LedService();
+
+        //ledsOnOff(service);
+        //switchEvenOdd(service);
+        //switchRandom(service);
+        showBinary(service);
+
+
+    }
+}
+
+
+		
+
